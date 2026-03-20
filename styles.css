@@ -247,6 +247,24 @@ body {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(5, 5, 8, 0.78);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 50;
+}
+
+.login-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .login-modal {
   width: min(420px, 92vw);
   border: none;
@@ -258,12 +276,14 @@ body {
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(180, 140, 255, 0.35);
-  animation: modalPop 0.3s ease;
+  transform: translateY(16px) scale(0.92);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.login-modal::backdrop {
-  background: rgba(5, 5, 8, 0.8);
-  backdrop-filter: blur(4px);
+.login-modal.is-open {
+  transform: translateY(0) scale(1);
+  opacity: 1;
 }
 
 .login-modal::before {
@@ -286,12 +306,9 @@ body {
   pointer-events: none;
 }
 
-.login-modal.open {
-  animation: bubbleIn 0.4s ease forwards;
-}
-
 .login-modal.closing {
-  animation: bubbleOut 0.3s ease forwards;
+  transform: translateY(10px) scale(0.9);
+  opacity: 0;
 }
 
 .modal-header {
@@ -385,39 +402,6 @@ body {
   }
   100% {
     transform: translateX(-4%) translateY(6%);
-  }
-}
-
-@keyframes modalPop {
-  from {
-    transform: translateY(10px) scale(0.98);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes bubbleIn {
-  from {
-    transform: translateY(16px) scale(0.92);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes bubbleOut {
-  from {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(10px) scale(0.9);
-    opacity: 0;
   }
 }
 

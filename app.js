@@ -1,6 +1,7 @@
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const loginModal = document.getElementById("loginModal");
+const loginOverlay = document.getElementById("loginOverlay");
 const closeModal = document.getElementById("closeModal");
 const loginForm = document.getElementById("loginForm");
 const signupBtn = document.getElementById("signupBtn");
@@ -28,21 +29,23 @@ function updateAuthUI(email) {
 }
 
 function openModal() {
+  loginOverlay.classList.add("is-open");
   loginModal.classList.remove("closing");
-  loginModal.classList.add("open");
-  loginModal.showModal();
+  loginModal.classList.add("is-open");
+  loginOverlay.setAttribute("aria-hidden", "false");
 }
 
 function closeModalSafe() {
-  if (!loginModal.open) return;
-  loginModal.classList.remove("open");
+  if (!loginOverlay.classList.contains("is-open")) return;
+  loginModal.classList.remove("is-open");
   loginModal.classList.add("closing");
   const finishClose = () => {
     loginModal.classList.remove("closing");
-    loginModal.close();
+    loginOverlay.classList.remove("is-open");
+    loginOverlay.setAttribute("aria-hidden", "true");
     loginModal.removeEventListener("animationend", finishClose);
   };
-  loginModal.addEventListener("animationend", finishClose);
+  loginModal.addEventListener("transitionend", finishClose);
 }
 
 function initSupabase() {
@@ -219,20 +222,10 @@ function bindEvents() {
   signupBtn.addEventListener("click", handleSignup);
   logoutBtn.addEventListener("click", handleLogout);
 
-  loginModal.addEventListener("click", (event) => {
-    const rect = loginModal.getBoundingClientRect();
-    const isInDialog =
-      rect.top <= event.clientY &&
-      event.clientY <= rect.top + rect.height &&
-      rect.left <= event.clientX &&
-      event.clientX <= rect.left + rect.width;
-    if (!isInDialog) {
+  loginOverlay.addEventListener("click", (event) => {
+    if (event.target === loginOverlay) {
       closeModalSafe();
     }
-  });
-
-  loginModal.addEventListener("close", () => {
-    loginModal.classList.remove("open", "closing");
   });
 }
 

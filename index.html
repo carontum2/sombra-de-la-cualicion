@@ -89,28 +89,30 @@
       </section>
     </main>
 
-    <dialog class="login-modal" id="loginModal">
-      <div class="modal-header">
-        <h2>Acceso a la Coalición</h2>
-        <button class="icon-btn" id="closeModal" aria-label="Cerrar">✕</button>
-      </div>
-      <p class="modal-note">Conecta tu cuenta para comprar rangos.</p>
-      <form class="modal-form" id="loginForm">
-        <label class="field">
-          <span>Email</span>
-          <input type="email" name="email" placeholder="comandante@coalicion.com" required />
-        </label>
-        <label class="field">
-          <span>Contraseña</span>
-          <input type="password" name="password" placeholder="••••••••" required />
-        </label>
-        <div class="modal-actions">
-          <button class="btn btn-primary" type="submit">Iniciar sesión</button>
-          <button class="btn btn-ghost" type="button" id="signupBtn">Crear cuenta</button>
+    <div class="login-overlay" id="loginOverlay" aria-hidden="true">
+      <div class="login-modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+        <div class="modal-header">
+          <h2 id="loginTitle">Acceso a la Coalición</h2>
+          <button class="icon-btn" id="closeModal" aria-label="Cerrar">✕</button>
         </div>
-        <p class="modal-footnote" id="authMessage">Acceso propio usando tabla en Supabase.</p>
-      </form>
-    </dialog>
+        <p class="modal-note">Conecta tu cuenta para comprar rangos.</p>
+        <form class="modal-form" id="loginForm">
+          <label class="field">
+            <span>Email</span>
+            <input type="email" name="email" placeholder="comandante@coalicion.com" required />
+          </label>
+          <label class="field">
+            <span>Contraseña</span>
+            <input type="password" name="password" placeholder="••••••••" required />
+          </label>
+          <div class="modal-actions">
+            <button class="btn btn-primary" type="submit">Iniciar sesión</button>
+            <button class="btn btn-ghost" type="button" id="signupBtn">Crear cuenta</button>
+          </div>
+          <p class="modal-footnote" id="authMessage">Acceso propio usando tabla en Supabase.</p>
+        </form>
+      </div>
+    </div>
 
     <script src="supabase-config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
