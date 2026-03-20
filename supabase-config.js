@@ -1,2 +1,3 @@
-window.SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
-window.SUPABASE_ANON_KEY = "TU-ANON-KEY";
+window.SUPABASE_URL = "https://tltczxjezyfabcgvoxkc.supabase.co";
+window.SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRsdGN6eGplenlmYWJjZ3ZveGtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTk2NzIsImV4cCI6MjA4OTU3NTY3Mn0.TgFexJpLyliDatmfAdE7JsSsiBZa8pQAlSI2v19EnFk";
