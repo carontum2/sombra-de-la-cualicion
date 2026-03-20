@@ -29,6 +29,10 @@ function clearError() {
   errorBox.classList.remove("has-error");
 }
 
+if (errorBox) {
+  errorBox.textContent = "App JS cargado";
+}
+
 function updateAuthUI(email) {
   if (email) {
     authStatus.textContent = `Conectado como ${email}`;
@@ -247,6 +251,10 @@ async function handleLogout() {
 }
 
 function bindEvents() {
+  if (!loginBtn || !loginOverlay || !loginModal) {
+    reportError("Faltan elementos del login en el HTML.");
+    return;
+  }
   loginBtn.addEventListener("click", openModal);
   closeModal.addEventListener("click", closeModalSafe);
   loginForm.addEventListener("submit", handleLogin);
