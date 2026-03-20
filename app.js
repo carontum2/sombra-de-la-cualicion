@@ -9,6 +9,11 @@ const authStatus = document.getElementById("authStatus");
 const authMessage = document.getElementById("authMessage");
 const errorBox = document.getElementById("errorBox");
 const logoutFab = document.getElementById("logoutFab");
+const jsStatus = document.getElementById("jsStatus");
+
+if (jsStatus) {
+  jsStatus.textContent = "JS: cargado";
+}
 
 let supabase = null;
 const STORAGE_KEY = "sdc_user_email";

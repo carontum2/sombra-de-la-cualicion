@@ -112,6 +112,7 @@
             <button class="btn btn-ghost" type="button" id="signupBtn">Crear cuenta</button>
           </div>
           <p class="modal-footnote" id="authMessage">Acceso propio usando tabla en Supabase.</p>
+          <p class="modal-footnote" id="jsStatus">JS: sin cargar</p>
         </form>
       </div>
     </div>
@@ -119,8 +120,8 @@
     <div class="status-left" id="errorBox">Sin errores</div>
     <div class="status-right">v0.1.0</div>
 
-    <script src="supabase-config.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="app.js"></script>
+    <script src="supabase-config.js" onerror="document.getElementById('errorBox').textContent='No se pudo cargar supabase-config.js'"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="document.getElementById('errorBox').textContent='No se pudo cargar supabase-js'"></script>
+    <script src="app.js" onerror="document.getElementById('errorBox').textContent='No se pudo cargar app.js'"></script>
   </body>
 </html>
