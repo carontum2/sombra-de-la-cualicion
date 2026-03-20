@@ -1,0 +1,16 @@
+{
+  "name": "sombra-coalicion",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.97.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1"
+  }
+}

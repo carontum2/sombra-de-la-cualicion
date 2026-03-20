@@ -1,33 +1,21 @@
--- Supabase schema + RLS for custom login (no Supabase Auth)
--- Edit as needed.
-
-create extension if not exists pgcrypto;
-
-create table if not exists public.usuarios (
-  id uuid primary key default gen_random_uuid(),
-  email text unique not null,
-  password_hash text not null,
-  created_at timestamp with time zone default now()
+create table if not exists public.users (
+  id bigint generated always as identity primary key,
+  minecraft_uuid text not null unique,
+  minecraft_name text not null,
+  password_hash text,
+  created_at timestamptz not null default timezone('utc', now()),
+  updated_at timestamptz not null default timezone('utc', now())
 );
 
-alter table public.usuarios enable row level security;
-
-do $$
+create or replace function public.set_updated_at()
+returns trigger as $$
 begin
-  if not exists (
-    select 1 from pg_policies where schemaname = 'public' and tablename = 'usuarios' and policyname = 'usuarios_select'
-  ) then
-    create policy usuarios_select on public.usuarios
-    for select using (true);
-  end if;
-end $$;
+  new.updated_at = timezone('utc', now());
+  return new;
+end;
+$$ language plpgsql;
 
-do $$
-begin
-  if not exists (
-    select 1 from pg_policies where schemaname = 'public' and tablename = 'usuarios' and policyname = 'usuarios_insert'
-  ) then
-    create policy usuarios_insert on public.usuarios
-    for insert with check (true);
-  end if;
-end $$;
+drop trigger if exists users_set_updated_at on public.users;
+create trigger users_set_updated_at
+before update on public.users
+for each row execute function public.set_updated_at();
