@@ -7,6 +7,23 @@ create table if not exists public.users (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+create table if not exists public.wikis (
+  id bigint generated always as identity primary key,
+  title text not null,
+  description text not null,
+  content text not null,
+  created_by text not null,
+  created_at timestamptz not null default timezone('utc', now())
+);
+
+create table if not exists public.wiki_comments (
+  id bigint generated always as identity primary key,
+  wiki_id bigint not null references public.wikis(id) on delete cascade,
+  author text not null,
+  content text not null,
+  created_at timestamptz not null default timezone('utc', now())
+);
+
 create or replace function public.set_updated_at()
 returns trigger as $$
 begin

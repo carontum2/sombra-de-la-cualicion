@@ -40,7 +40,7 @@
     </header>
 
     <main class="content">
-      <section class="ranks">
+      <section class="ranks" id="storeSection">
         <div class="rank-card">
           <div class="rank-header">
             <span class="rank-title">Rango vacío</span>
@@ -89,6 +89,52 @@
           <button class="btn btn-secondary" disabled>Disponible pronto</button>
         </div>
       </section>
+
+      <section class="wiki hidden" id="wikiSection">
+        <div class="wiki-header">
+          <button class="icon-btn back-btn hidden" id="wikiBackBtn" aria-label="Volver">←</button>
+          <h2>Wiki de la Coalición</h2>
+        </div>
+
+        <div class="wiki-admin hidden" id="wikiAdmin">
+          <h3>Crear nueva wiki</h3>
+          <form class="modal-form" id="wikiForm">
+            <label class="field">
+              <span>Título</span>
+              <input type="text" name="title" maxlength="120" required />
+            </label>
+            <label class="field">
+              <span>Descripción</span>
+              <input type="text" name="description" maxlength="240" required />
+            </label>
+            <label class="field">
+              <span>Contenido</span>
+              <textarea name="content" rows="6" required></textarea>
+            </label>
+            <button class="btn btn-primary" type="submit">Publicar</button>
+          </form>
+        </div>
+
+        <div class="wiki-list" id="wikiList"></div>
+
+        <article class="wiki-detail hidden" id="wikiDetail">
+          <h3 id="wikiDetailTitle"></h3>
+          <p class="wiki-detail-desc" id="wikiDetailDesc"></p>
+          <div class="wiki-detail-content" id="wikiDetailContent"></div>
+
+          <div class="wiki-comments">
+            <h4>Comentarios</h4>
+            <form class="modal-form" id="commentForm">
+              <label class="field">
+                <span>Comentario</span>
+                <textarea name="comment" rows="3" required></textarea>
+              </label>
+              <button class="btn btn-secondary" type="submit">Enviar comentario</button>
+            </form>
+            <div class="comment-list" id="commentList"></div>
+          </div>
+        </article>
+      </section>
     </main>
 
     <div class="login-panel" id="loginPanel">
@@ -118,6 +164,9 @@
 
     <div class="status-left" id="errorBox">Sin errores</div>
     <div class="status-right">v0.1.0</div>
+    <div class="view-toggle">
+      <button class="btn btn-ghost" id="toggleViewBtn">Ver Wiki</button>
+    </div>
 
     <script src="script.js"></script>
   </body>

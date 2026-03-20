@@ -9,6 +9,19 @@ const signupBtn = document.getElementById("signupBtn");
 const authStatus = document.getElementById("authStatus");
 const authMessage = document.getElementById("authMessage");
 const errorBox = document.getElementById("errorBox");
+const toggleViewBtn = document.getElementById("toggleViewBtn");
+const storeSection = document.getElementById("storeSection");
+const wikiSection = document.getElementById("wikiSection");
+const wikiList = document.getElementById("wikiList");
+const wikiDetail = document.getElementById("wikiDetail");
+const wikiDetailTitle = document.getElementById("wikiDetailTitle");
+const wikiDetailDesc = document.getElementById("wikiDetailDesc");
+const wikiDetailContent = document.getElementById("wikiDetailContent");
+const wikiBackBtn = document.getElementById("wikiBackBtn");
+const wikiAdmin = document.getElementById("wikiAdmin");
+const wikiForm = document.getElementById("wikiForm");
+const commentForm = document.getElementById("commentForm");
+const commentList = document.getElementById("commentList");
 
 function setStatus(message, isError = false) {
   if (errorBox) {
@@ -21,7 +34,11 @@ function setStatus(message, isError = false) {
   }
 }
 
+let currentSession = { loggedIn: false, user: null };
+let activeWikiId = null;
+
 function updateAuthUI(session) {
+  currentSession = session || { loggedIn: false, user: null };
   if (session?.loggedIn && session.user) {
     authStatus.textContent = `Conectado como ${session.user.minecraft_name}`;
     logoutBtn.disabled = false;
@@ -31,6 +48,9 @@ function updateAuthUI(session) {
       logoutFab.classList.add("show");
     }
     hideLoginPanel();
+    if (wikiAdmin) {
+      wikiAdmin.classList.toggle("hidden", !session.user.isAdmin);
+    }
     return;
   }
 
@@ -42,6 +62,7 @@ function updateAuthUI(session) {
     logoutFab.hidden = true;
   }
   if (loginPanel) loginPanel.classList.remove("hidden");
+  if (wikiAdmin) wikiAdmin.classList.add("hidden");
 }
 
 function hideLoginPanel() {
@@ -81,6 +102,85 @@ async function loadSession() {
   try {
     const session = await fetchJson("/api/session");
     updateAuthUI(session);
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+async function loadWikis() {
+  try {
+    const data = await fetchJson("/api/wikis");
+    wikiList.innerHTML = "";
+    data.items.forEach((item) => {
+      const div = document.createElement("div");
+      div.className = "wiki-item";
+      div.dataset.id = item.id;
+      div.innerHTML = `<strong>${item.title}</strong><div class=\"comment-meta\">${item.description}</div>`;
+      div.addEventListener("click", () => openWikiDetail(item.id));
+      wikiList.appendChild(div);
+    });
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+async function openWikiDetail(id) {
+  activeWikiId = id;
+  wikiList.classList.add("hidden");
+  wikiDetail.classList.remove("hidden");
+  wikiBackBtn.classList.remove("hidden");
+  try {
+    const data = await fetchJson(`/api/wikis/${id}`);
+    wikiDetailTitle.textContent = data.wiki.title;
+    wikiDetailDesc.textContent = data.wiki.description;
+    wikiDetailContent.textContent = data.wiki.content;
+    await loadComments();
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+function backToWikiList() {
+  activeWikiId = null;
+  wikiDetail.classList.add("hidden");
+  wikiBackBtn.classList.add("hidden");
+  wikiList.classList.remove("hidden");
+}
+
+async function loadComments() {
+  if (!activeWikiId) return;
+  try {
+    const data = await fetchJson(`/api/wikis/${activeWikiId}/comments`);
+    commentList.innerHTML = "";
+    data.items.forEach((item) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "comment-item";
+      wrapper.innerHTML = `
+        <div>
+          <div><strong>${item.author}</strong></div>
+          <div>${item.content}</div>
+          <div class=\"comment-meta\">${new Date(item.created_at).toLocaleString()}</div>
+        </div>
+      `;
+      if (currentSession?.user?.isAdmin) {
+        const actions = document.createElement("div");
+        actions.className = "comment-actions";
+        const del = document.createElement("button");
+        del.className = "comment-delete";
+        del.textContent = "Borrar";
+        del.addEventListener("click", async () => {
+          try {
+            await fetchJson(`/api/comments/${item.id}`, { method: "DELETE" });
+            await loadComments();
+          } catch (error) {
+            setStatus(error.message, true);
+          }
+        });
+        actions.appendChild(del);
+        wrapper.appendChild(actions);
+      }
+      commentList.appendChild(wrapper);
+    });
   } catch (error) {
     setStatus(error.message, true);
   }
@@ -137,6 +237,67 @@ async function handleLogout() {
   }
 }
 
+async function handleWikiCreate(event) {
+  event.preventDefault();
+  if (!currentSession?.user?.isAdmin) {
+    setStatus("Solo Rontumero puede crear wikis.", true);
+    return;
+  }
+  const form = new FormData(wikiForm);
+  try {
+    await fetchJson("/api/wikis", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: form.get("title"),
+        description: form.get("description"),
+        content: form.get("content"),
+      }),
+    });
+    wikiForm.reset();
+    await loadWikis();
+    setStatus("Wiki creada.");
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+async function handleCommentSubmit(event) {
+  event.preventDefault();
+  if (!activeWikiId) return;
+  if (!currentSession?.loggedIn) {
+    setStatus("Debes iniciar sesión para comentar.", true);
+    return;
+  }
+  const form = new FormData(commentForm);
+  try {
+    await fetchJson(`/api/wikis/${activeWikiId}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: form.get("comment") }),
+    });
+    commentForm.reset();
+    await loadComments();
+    setStatus("Comentario enviado.");
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+function toggleView() {
+  const isWiki = !wikiSection.classList.contains("hidden");
+  if (isWiki) {
+    wikiSection.classList.add("hidden");
+    storeSection.classList.remove("hidden");
+    toggleViewBtn.textContent = "Ver Wiki";
+  } else {
+    storeSection.classList.add("hidden");
+    wikiSection.classList.remove("hidden");
+    toggleViewBtn.textContent = "Ver Tienda";
+    loadWikis();
+  }
+}
+
 function bindEvents() {
   if (loginBtn) loginBtn.addEventListener("click", openLoginPanel);
   if (closeModal) closeModal.addEventListener("click", hideLoginPanel);
@@ -144,6 +305,10 @@ function bindEvents() {
   if (signupBtn) signupBtn.addEventListener("click", handleRegister);
   if (logoutBtn) logoutBtn.addEventListener("click", handleLogout);
   if (logoutFab) logoutFab.addEventListener("click", handleLogout);
+  if (toggleViewBtn) toggleViewBtn.addEventListener("click", toggleView);
+  if (wikiBackBtn) wikiBackBtn.addEventListener("click", backToWikiList);
+  if (wikiForm) wikiForm.addEventListener("submit", handleWikiCreate);
+  if (commentForm) commentForm.addEventListener("submit", handleCommentSubmit);
 
   if (loginPanel) {
     loginPanel.addEventListener("click", (event) => {

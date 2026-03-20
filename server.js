@@ -10,6 +10,7 @@ const port = Number(process.env.PORT || 3000);
 
 const SESSION_COOKIE = "sombra_session";
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const ADMIN_MINECRAFT = "Rontumero";
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -126,6 +127,10 @@ function normalizeMinecraftUsername(username) {
 
 function isValidMinecraftUsername(username) {
   return /^[A-Za-z0-9_]{3,16}$/.test(username);
+}
+
+function isAdmin(username) {
+  return normalizeMinecraftUsername(username).toLowerCase() === ADMIN_MINECRAFT.toLowerCase();
 }
 
 function getMinecraftKey(username) {
@@ -304,7 +309,118 @@ app.get(
       clearSessionCookie(res);
       return res.json({ loggedIn: false, user: null });
     }
-    res.json({ loggedIn: true, user: { id: user.id, minecraft_name: user.minecraft_name } });
+    res.json({
+      loggedIn: true,
+      user: { id: user.id, minecraft_name: user.minecraft_name, isAdmin: isAdmin(user.minecraft_name) },
+    });
+  })
+);
+
+app.get(
+  "/api/wikis",
+  asyncHandler(async (_req, res) => {
+    ensureSupabaseConfigured();
+    const { data, error } = await supabase
+      .from("wikis")
+      .select("id,title,description,created_at,created_by")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(`Supabase wikis failed: ${error.message}`);
+    res.json({ items: data || [] });
+  })
+);
+
+app.get(
+  "/api/wikis/:id",
+  asyncHandler(async (req, res) => {
+    ensureSupabaseConfigured();
+    const wikiId = Number(req.params.id);
+    const { data, error } = await supabase
+      .from("wikis")
+      .select("id,title,description,content,created_at,created_by")
+      .eq("id", wikiId)
+      .maybeSingle();
+    if (error) throw new Error(`Supabase wiki failed: ${error.message}`);
+    if (!data) return res.status(404).json({ error: "Wiki no encontrada." });
+    res.json({ wiki: data });
+  })
+);
+
+app.post(
+  "/api/wikis",
+  asyncHandler(async (req, res) => {
+    ensureSupabaseConfigured();
+    const session = readSession(req);
+    if (!session) return res.status(401).json({ error: "Debes iniciar sesión." });
+    const user = await getUserById(session.userId);
+    if (!user || !isAdmin(user.minecraft_name)) {
+      return res.status(403).json({ error: "Solo Rontumero puede crear wikis." });
+    }
+    const title = String(req.body.title || "").trim();
+    const description = String(req.body.description || "").trim();
+    const content = String(req.body.content || "").trim();
+    if (!title || !description || !content) {
+      return res.status(400).json({ error: "Título, descripción y contenido son obligatorios." });
+    }
+    const { data, error } = await supabase
+      .from("wikis")
+      .insert({ title, description, content, created_by: user.minecraft_name })
+      .select("id,title,description,created_at,created_by")
+      .single();
+    if (error) throw new Error(`Supabase create wiki failed: ${error.message}`);
+    res.status(201).json({ wiki: data });
+  })
+);
+
+app.get(
+  "/api/wikis/:id/comments",
+  asyncHandler(async (req, res) => {
+    ensureSupabaseConfigured();
+    const wikiId = Number(req.params.id);
+    const { data, error } = await supabase
+      .from("wiki_comments")
+      .select("id,author,content,created_at")
+      .eq("wiki_id", wikiId)
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(`Supabase comments failed: ${error.message}`);
+    res.json({ items: data || [] });
+  })
+);
+
+app.post(
+  "/api/wikis/:id/comments",
+  asyncHandler(async (req, res) => {
+    ensureSupabaseConfigured();
+    const session = readSession(req);
+    if (!session) return res.status(401).json({ error: "Debes iniciar sesión." });
+    const user = await getUserById(session.userId);
+    if (!user) return res.status(401).json({ error: "Debes iniciar sesión." });
+    const wikiId = Number(req.params.id);
+    const content = String(req.body.content || "").trim();
+    if (!content) return res.status(400).json({ error: "El comentario no puede estar vacío." });
+    const { data, error } = await supabase
+      .from("wiki_comments")
+      .insert({ wiki_id: wikiId, author: user.minecraft_name, content })
+      .select("id,author,content,created_at")
+      .single();
+    if (error) throw new Error(`Supabase create comment failed: ${error.message}`);
+    res.status(201).json({ comment: data });
+  })
+);
+
+app.delete(
+  "/api/comments/:id",
+  asyncHandler(async (req, res) => {
+    ensureSupabaseConfigured();
+    const session = readSession(req);
+    if (!session) return res.status(401).json({ error: "Debes iniciar sesión." });
+    const user = await getUserById(session.userId);
+    if (!user || !isAdmin(user.minecraft_name)) {
+      return res.status(403).json({ error: "Solo Rontumero puede borrar comentarios." });
+    }
+    const commentId = Number(req.params.id);
+    const { error } = await supabase.from("wiki_comments").delete().eq("id", commentId);
+    if (error) throw new Error(`Supabase delete comment failed: ${error.message}`);
+    res.json({ ok: true });
   })
 );
 

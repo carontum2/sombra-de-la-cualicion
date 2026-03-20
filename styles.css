@@ -283,6 +283,113 @@ body {
   z-index: 1000;
 }
 
+.hidden {
+  display: none !important;
+}
+
+.view-toggle {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  z-index: 1001;
+}
+
+.wiki {
+  display: grid;
+  gap: 24px;
+  animation: cardRise 0.6s ease;
+}
+
+.wiki-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.back-btn {
+  border: 1px solid rgba(180, 140, 255, 0.4);
+  border-radius: 12px;
+  padding: 6px 10px;
+  background: rgba(15, 10, 28, 0.8);
+}
+
+.wiki-admin {
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(180, 140, 255, 0.2);
+  background: rgba(20, 14, 34, 0.9);
+  box-shadow: var(--shadow);
+}
+
+.wiki-list {
+  display: grid;
+  gap: 12px;
+}
+
+.wiki-item {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: var(--panel-strong);
+  border: 1px solid rgba(138, 90, 243, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.wiki-item:hover {
+  transform: translateY(-4px);
+  border-color: rgba(138, 90, 243, 0.55);
+}
+
+.wiki-detail {
+  padding: 22px;
+  border-radius: 18px;
+  background: rgba(18, 12, 30, 0.92);
+  border: 1px solid rgba(138, 90, 243, 0.3);
+  box-shadow: var(--shadow);
+  animation: cardRise 0.6s ease;
+}
+
+.wiki-detail-content {
+  margin-top: 12px;
+  color: var(--silver);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.wiki-comments {
+  margin-top: 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.comment-item {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(12, 10, 22, 0.8);
+  border: 1px solid rgba(180, 140, 255, 0.2);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.comment-meta {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.comment-actions {
+  display: grid;
+  gap: 6px;
+}
+
+.comment-delete {
+  font-size: 0.75rem;
+  border: 1px solid rgba(255, 143, 163, 0.4);
+  color: #ff8fa3;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: transparent;
+}
 .login-modal::before {
   content: "";
   position: absolute;
