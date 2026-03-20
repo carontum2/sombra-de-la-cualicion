@@ -37,6 +37,7 @@ function setStatus(message, isError = false) {
 
 let currentSession = { loggedIn: false, user: null };
 let activeWikiId = null;
+let pollTimer = null;
 
 function updateAuthUI(session) {
   currentSession = session || { loggedIn: false, user: null };
@@ -138,6 +139,10 @@ async function openWikiDetail(id) {
     if (data.wiki.image_url) {
       wikiDetailImage.src = data.wiki.image_url;
       wikiDetailImage.classList.remove("hidden");
+      wikiDetailImage.onerror = () => {
+        wikiDetailImage.classList.add("hidden");
+        setStatus("La imagen no se pudo cargar. Revisa el link de Drive.", true);
+      };
     } else {
       wikiDetailImage.classList.add("hidden");
     }
@@ -251,6 +256,24 @@ async function handleWikiCreate(event) {
     return;
   }
   const form = new FormData(wikiForm);
+  const rawImageUrl = String(form.get("image_url") || "").trim();
+  let imageUrl = rawImageUrl;
+  if (rawImageUrl.includes("drive.google.com")) {
+    try {
+      const url = new URL(rawImageUrl);
+      const idParam = url.searchParams.get("id");
+      let fileId = idParam;
+      if (!fileId && url.pathname.includes("/file/d/")) {
+        const parts = url.pathname.split("/file/d/");
+        fileId = parts[1]?.split("/")[0] || "";
+      }
+      if (fileId) {
+        imageUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+      }
+    } catch {
+      imageUrl = rawImageUrl;
+    }
+  }
   try {
     await fetchJson("/api/wikis", {
       method: "POST",
@@ -258,7 +281,7 @@ async function handleWikiCreate(event) {
       body: JSON.stringify({
         title: form.get("title"),
         description: form.get("description"),
-        image_url: form.get("image_url"),
+        image_url: imageUrl,
         content: form.get("content"),
       }),
     });
@@ -306,6 +329,23 @@ function toggleView() {
   }
 }
 
+function startPolling() {
+  if (pollTimer) return;
+  pollTimer = setInterval(async () => {
+    try {
+      if (!wikiSection.classList.contains("hidden")) {
+        if (activeWikiId) {
+          await openWikiDetail(activeWikiId);
+        } else {
+          await loadWikis();
+        }
+      }
+    } catch {
+      // Silent to avoid spam
+    }
+  }, 1000);
+}
+
 function bindEvents() {
   if (loginBtn) loginBtn.addEventListener("click", openLoginPanel);
   if (closeModal) closeModal.addEventListener("click", hideLoginPanel);
@@ -329,3 +369,4 @@ function bindEvents() {
 
 bindEvents();
 loadSession();
+startPolling();
