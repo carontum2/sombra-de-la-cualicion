@@ -1,13 +1,14 @@
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const loginModal = document.getElementById("loginModal");
-const loginOverlay = document.getElementById("loginOverlay");
+const loginPanel = document.getElementById("loginPanel");
 const closeModal = document.getElementById("closeModal");
 const loginForm = document.getElementById("loginForm");
 const signupBtn = document.getElementById("signupBtn");
 const authStatus = document.getElementById("authStatus");
 const authMessage = document.getElementById("authMessage");
 const errorBox = document.getElementById("errorBox");
+const logoutFab = document.getElementById("logoutFab");
 
 let supabase = null;
 const STORAGE_KEY = "sdc_user_email";
@@ -29,46 +30,46 @@ function clearError() {
   errorBox.classList.remove("has-error");
 }
 
-if (errorBox) {
-  errorBox.textContent = "App JS cargado";
-}
 
 function updateAuthUI(email) {
   if (email) {
     authStatus.textContent = `Conectado como ${email}`;
     logoutBtn.disabled = false;
     loginBtn.disabled = true;
+    if (loginPanel) loginPanel.classList.add("hidden");
+    if (logoutFab) {
+      logoutFab.hidden = false;
+      logoutFab.classList.add("show");
+    }
   } else {
     authStatus.textContent = "No conectado";
     logoutBtn.disabled = true;
     loginBtn.disabled = false;
+    if (loginPanel) loginPanel.classList.remove("hidden");
+    if (logoutFab) {
+      logoutFab.classList.remove("show");
+      logoutFab.hidden = true;
+    }
   }
 }
 
 function openModal() {
-  if (!loginOverlay || !loginModal) {
-    reportError("No se pudo abrir el globo de login.");
+  if (!loginPanel || !loginModal) {
+    reportError("No se pudo abrir el login fijo.");
     return;
   }
   clearError();
-  loginOverlay.style.opacity = "1";
-  loginOverlay.style.pointerEvents = "auto";
-  loginOverlay.classList.add("is-open");
+  loginPanel.classList.remove("hidden");
   loginModal.classList.remove("closing");
-  loginModal.classList.add("is-open");
-  loginOverlay.setAttribute("aria-hidden", "false");
 }
 
 function closeModalSafe() {
-  if (!loginOverlay.classList.contains("is-open")) return;
+  if (!loginPanel || loginPanel.classList.contains("hidden")) return;
   loginModal.classList.remove("is-open");
   loginModal.classList.add("closing");
   const finishClose = () => {
     loginModal.classList.remove("closing");
-    loginOverlay.style.opacity = "";
-    loginOverlay.style.pointerEvents = "";
-    loginOverlay.classList.remove("is-open");
-    loginOverlay.setAttribute("aria-hidden", "true");
+    loginPanel.classList.add("hidden");
     loginModal.removeEventListener("transitionend", finishClose);
   };
   loginModal.addEventListener("transitionend", finishClose);
@@ -251,7 +252,7 @@ async function handleLogout() {
 }
 
 function bindEvents() {
-  if (!loginBtn || !loginOverlay || !loginModal) {
+  if (!loginBtn || !loginPanel || !loginModal) {
     reportError("Faltan elementos del login en el HTML.");
     return;
   }
@@ -260,9 +261,10 @@ function bindEvents() {
   loginForm.addEventListener("submit", handleLogin);
   signupBtn.addEventListener("click", handleSignup);
   logoutBtn.addEventListener("click", handleLogout);
+  if (logoutFab) logoutFab.addEventListener("click", handleLogout);
 
-  loginOverlay.addEventListener("click", (event) => {
-    if (event.target === loginOverlay) {
+  loginPanel.addEventListener("click", (event) => {
+    if (event.target === loginPanel) {
       closeModalSafe();
     }
   });

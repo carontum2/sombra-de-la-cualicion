@@ -247,22 +247,22 @@ body {
   background: rgba(255, 255, 255, 0.05);
 }
 
-.login-overlay {
+.login-panel {
   position: fixed;
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(5, 5, 8, 0.78);
-  backdrop-filter: blur(4px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
+  background: rgba(5, 5, 8, 0.7);
+  backdrop-filter: blur(6px);
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.35s ease;
   z-index: 999;
 }
 
-.login-overlay.is-open {
-  opacity: 1;
-  pointer-events: auto;
+.login-panel.hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .login-modal {
@@ -276,15 +276,10 @@ body {
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(180, 140, 255, 0.35);
-  transform: translateY(16px) scale(0.92);
-  opacity: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  z-index: 1000;
-}
-
-.login-modal.is-open {
   transform: translateY(0) scale(1);
   opacity: 1;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  z-index: 1000;
 }
 
 .login-modal::before {
@@ -416,6 +411,29 @@ body {
   100% {
     transform: translateY(0) rotate(0deg);
   }
+}
+
+.logout-fab {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 1001;
+  background: rgba(10, 8, 20, 0.75);
+  border: 1px solid rgba(180, 140, 255, 0.45);
+  color: var(--text);
+  backdrop-filter: blur(6px);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.logout-fab.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.logout-fab[hidden] {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 .status-left,

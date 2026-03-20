@@ -19,6 +19,8 @@
       <div class="mist mist--two"></div>
     </div>
 
+    <button class="btn btn-ghost logout-fab" id="logoutFab" hidden>Cerrar sesión</button>
+
     <header class="hero">
       <div class="brand">
         <img class="logo" src="logo.png" alt="Logo Sombra de la Coalición" />
@@ -89,8 +91,8 @@
       </section>
     </main>
 
-    <div class="login-overlay" id="loginOverlay" aria-hidden="true">
-      <div class="login-modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="login-panel" id="loginPanel">
+      <div class="login-modal" id="loginModal" role="dialog" aria-labelledby="loginTitle">
         <div class="modal-header">
           <h2 id="loginTitle">Acceso a la Coalición</h2>
           <button class="icon-btn" id="closeModal" aria-label="Cerrar">✕</button>
