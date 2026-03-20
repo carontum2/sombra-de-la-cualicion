@@ -252,15 +252,46 @@ body {
   border: none;
   border-radius: 20px;
   padding: 24px;
-  background: rgba(16, 12, 26, 0.95);
+  background: linear-gradient(160deg, rgba(26, 16, 44, 0.92), rgba(10, 10, 18, 0.88));
   color: var(--text);
   box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(180, 140, 255, 0.35);
   animation: modalPop 0.3s ease;
 }
 
 .login-modal::backdrop {
   background: rgba(5, 5, 8, 0.8);
   backdrop-filter: blur(4px);
+}
+
+.login-modal::before {
+  content: "";
+  position: absolute;
+  width: 140%;
+  height: 140%;
+  left: -20%;
+  top: -60%;
+  background: radial-gradient(circle at center, rgba(138, 90, 243, 0.35), rgba(138, 90, 243, 0));
+  animation: bubbleDrift 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.login-modal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(91, 195, 165, 0.18), transparent 60%);
+  pointer-events: none;
+}
+
+.login-modal.open {
+  animation: bubbleIn 0.4s ease forwards;
+}
+
+.login-modal.closing {
+  animation: bubbleOut 0.3s ease forwards;
 }
 
 .modal-header {
@@ -365,6 +396,40 @@ body {
   to {
     transform: translateY(0) scale(1);
     opacity: 1;
+  }
+}
+
+@keyframes bubbleIn {
+  from {
+    transform: translateY(16px) scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes bubbleOut {
+  from {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(10px) scale(0.9);
+    opacity: 0;
+  }
+}
+
+@keyframes bubbleDrift {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(10px) rotate(2deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
   }
 }
 

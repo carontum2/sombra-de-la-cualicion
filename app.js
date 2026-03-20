@@ -28,11 +28,21 @@ function updateAuthUI(email) {
 }
 
 function openModal() {
+  loginModal.classList.remove("closing");
+  loginModal.classList.add("open");
   loginModal.showModal();
 }
 
 function closeModalSafe() {
-  loginModal.close();
+  if (!loginModal.open) return;
+  loginModal.classList.remove("open");
+  loginModal.classList.add("closing");
+  const finishClose = () => {
+    loginModal.classList.remove("closing");
+    loginModal.close();
+    loginModal.removeEventListener("animationend", finishClose);
+  };
+  loginModal.addEventListener("animationend", finishClose);
 }
 
 function initSupabase() {
@@ -60,6 +70,48 @@ async function hashPassword(password) {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+function levenshtein(a, b) {
+  const matrix = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i += 1) matrix[i][0] = i;
+  for (let j = 0; j <= b.length; j += 1) matrix[0][j] = j;
+
+  for (let i = 1; i <= a.length; i += 1) {
+    for (let j = 1; j <= b.length; j += 1) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost
+      );
+    }
+  }
+
+  return matrix[a.length][b.length];
+}
+
+async function findSimilarEmail(email) {
+  const probe = email.split("@")[0]?.slice(0, 4) || email;
+  const { data } = await supabase
+    .from("usuarios")
+    .select("email")
+    .ilike("email", `%${probe}%`)
+    .limit(20);
+
+  if (!data || data.length === 0) return null;
+  let best = null;
+  let bestScore = Infinity;
+
+  for (const row of data) {
+    const score = levenshtein(email.toLowerCase(), row.email.toLowerCase());
+    if (score < bestScore) {
+      bestScore = score;
+      best = row.email;
+    }
+  }
+
+  return bestScore <= 2 ? best : null;
+}
+
 async function handleLogin(event) {
   event.preventDefault();
   if (!supabase) {
@@ -80,7 +132,28 @@ async function handleLogin(event) {
     .single();
 
   if (error || !data) {
-    setMessage("Usuario no encontrado.", true);
+    const similar = await findSimilarEmail(email);
+    if (similar) {
+      setMessage(`¿Quizá quisiste decir ${similar}?`, true);
+      return;
+    }
+
+    const insertResult = await supabase.from("usuarios").insert([
+      {
+        email,
+        password_hash: passwordHash,
+      },
+    ]);
+
+    if (insertResult.error) {
+      setMessage(insertResult.error.message, true);
+      return;
+    }
+
+    localStorage.setItem(STORAGE_KEY, email);
+    updateAuthUI(email);
+    setMessage("Cuenta creada y sesión iniciada.");
+    closeModalSafe();
     return;
   }
 
@@ -156,6 +229,10 @@ function bindEvents() {
     if (!isInDialog) {
       closeModalSafe();
     }
+  });
+
+  loginModal.addEventListener("close", () => {
+    loginModal.classList.remove("open", "closing");
   });
 }
 
