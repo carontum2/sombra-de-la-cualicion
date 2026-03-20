@@ -322,7 +322,7 @@ app.get(
     ensureSupabaseConfigured();
     const { data, error } = await supabase
       .from("wikis")
-      .select("id,title,description,created_at,created_by")
+      .select("id,title,description,image_url,created_at,created_by")
       .order("created_at", { ascending: false });
     if (error) throw new Error(`Supabase wikis failed: ${error.message}`);
     res.json({ items: data || [] });
@@ -336,7 +336,7 @@ app.get(
     const wikiId = Number(req.params.id);
     const { data, error } = await supabase
       .from("wikis")
-      .select("id,title,description,content,created_at,created_by")
+      .select("id,title,description,content,image_url,created_at,created_by")
       .eq("id", wikiId)
       .maybeSingle();
     if (error) throw new Error(`Supabase wiki failed: ${error.message}`);
@@ -358,13 +358,14 @@ app.post(
     const title = String(req.body.title || "").trim();
     const description = String(req.body.description || "").trim();
     const content = String(req.body.content || "").trim();
+    const imageUrl = String(req.body.image_url || "").trim() || null;
     if (!title || !description || !content) {
       return res.status(400).json({ error: "Título, descripción y contenido son obligatorios." });
     }
     const { data, error } = await supabase
       .from("wikis")
-      .insert({ title, description, content, created_by: user.minecraft_name })
-      .select("id,title,description,created_at,created_by")
+      .insert({ title, description, content, image_url: imageUrl, created_by: user.minecraft_name })
+      .select("id,title,description,image_url,created_at,created_by")
       .single();
     if (error) throw new Error(`Supabase create wiki failed: ${error.message}`);
     res.status(201).json({ wiki: data });

@@ -17,6 +17,7 @@ const wikiDetail = document.getElementById("wikiDetail");
 const wikiDetailTitle = document.getElementById("wikiDetailTitle");
 const wikiDetailDesc = document.getElementById("wikiDetailDesc");
 const wikiDetailContent = document.getElementById("wikiDetailContent");
+const wikiDetailImage = document.getElementById("wikiDetailImage");
 const wikiBackBtn = document.getElementById("wikiBackBtn");
 const wikiAdmin = document.getElementById("wikiAdmin");
 const wikiForm = document.getElementById("wikiForm");
@@ -134,6 +135,12 @@ async function openWikiDetail(id) {
     wikiDetailTitle.textContent = data.wiki.title;
     wikiDetailDesc.textContent = data.wiki.description;
     wikiDetailContent.textContent = data.wiki.content;
+    if (data.wiki.image_url) {
+      wikiDetailImage.src = data.wiki.image_url;
+      wikiDetailImage.classList.remove("hidden");
+    } else {
+      wikiDetailImage.classList.add("hidden");
+    }
     await loadComments();
   } catch (error) {
     setStatus(error.message, true);
@@ -251,6 +258,7 @@ async function handleWikiCreate(event) {
       body: JSON.stringify({
         title: form.get("title"),
         description: form.get("description"),
+        image_url: form.get("image_url"),
         content: form.get("content"),
       }),
     });

@@ -12,6 +12,7 @@ create table if not exists public.wikis (
   title text not null,
   description text not null,
   content text not null,
+  image_url text,
   created_by text not null,
   created_at timestamptz not null default timezone('utc', now())
 );

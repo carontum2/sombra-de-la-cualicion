@@ -290,7 +290,8 @@ body {
 .view-toggle {
   position: fixed;
   bottom: 18px;
-  right: 18px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 1001;
 }
 
@@ -354,6 +355,16 @@ body {
   color: var(--silver);
   line-height: 1.6;
   white-space: pre-wrap;
+}
+
+.wiki-detail-image {
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-top: 12px;
+  border: 1px solid rgba(138, 90, 243, 0.35);
+  box-shadow: 0 18px 36px rgba(10, 8, 22, 0.45);
 }
 
 .wiki-comments {

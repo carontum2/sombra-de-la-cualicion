@@ -108,6 +108,10 @@
               <input type="text" name="description" maxlength="240" required />
             </label>
             <label class="field">
+              <span>Imagen (link de Google Drive)</span>
+              <input type="url" name="image_url" placeholder="https://drive.google.com/uc?export=view&id=..." />
+            </label>
+            <label class="field">
               <span>Contenido</span>
               <textarea name="content" rows="6" required></textarea>
             </label>
@@ -120,6 +124,7 @@
         <article class="wiki-detail hidden" id="wikiDetail">
           <h3 id="wikiDetailTitle"></h3>
           <p class="wiki-detail-desc" id="wikiDetailDesc"></p>
+          <img class="wiki-detail-image hidden" id="wikiDetailImage" alt="Imagen de la wiki" />
           <div class="wiki-detail-content" id="wikiDetailContent"></div>
 
           <div class="wiki-comments">
