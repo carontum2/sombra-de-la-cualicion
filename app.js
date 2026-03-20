@@ -7,6 +7,7 @@ const loginForm = document.getElementById("loginForm");
 const signupBtn = document.getElementById("signupBtn");
 const authStatus = document.getElementById("authStatus");
 const authMessage = document.getElementById("authMessage");
+const errorBox = document.getElementById("errorBox");
 
 let supabase = null;
 const STORAGE_KEY = "sdc_user_email";
@@ -14,6 +15,18 @@ const STORAGE_KEY = "sdc_user_email";
 function setMessage(text, isError = false) {
   authMessage.textContent = text;
   authMessage.style.color = isError ? "#ff8fa3" : "";
+}
+
+function reportError(text) {
+  if (!errorBox) return;
+  errorBox.textContent = text;
+  errorBox.classList.add("has-error");
+}
+
+function clearError() {
+  if (!errorBox) return;
+  errorBox.textContent = "Sin errores";
+  errorBox.classList.remove("has-error");
 }
 
 function updateAuthUI(email) {
@@ -29,6 +42,11 @@ function updateAuthUI(email) {
 }
 
 function openModal() {
+  if (!loginOverlay || !loginModal) {
+    reportError("No se pudo abrir el globo de login.");
+    return;
+  }
+  clearError();
   loginOverlay.classList.add("is-open");
   loginModal.classList.remove("closing");
   loginModal.classList.add("is-open");
@@ -51,6 +69,7 @@ function closeModalSafe() {
 function initSupabase() {
   if (!window.supabase) {
     setMessage("Cargando Supabase...");
+    reportError("Supabase JS no cargó.");
     return null;
   }
 
@@ -59,6 +78,7 @@ function initSupabase() {
 
   if (!url || url.includes("TU-PROYECTO") || !key || key.includes("TU-ANON-KEY")) {
     setMessage("Configura tu URL y ANON KEY de Supabase.", true);
+    reportError("Supabase no configurado.");
     return null;
   }
 
@@ -119,6 +139,7 @@ async function handleLogin(event) {
   event.preventDefault();
   if (!supabase) {
     setMessage("Supabase no está configurado.", true);
+    reportError("Supabase no está listo.");
     return;
   }
 
@@ -138,6 +159,7 @@ async function handleLogin(event) {
     const similar = await findSimilarEmail(email);
     if (similar) {
       setMessage(`¿Quizá quisiste decir ${similar}?`, true);
+      reportError("Posible typo en email.");
       return;
     }
 
@@ -150,6 +172,7 @@ async function handleLogin(event) {
 
     if (insertResult.error) {
       setMessage(insertResult.error.message, true);
+      reportError(insertResult.error.message);
       return;
     }
 
@@ -162,6 +185,7 @@ async function handleLogin(event) {
 
   if (data.password_hash !== passwordHash) {
     setMessage("Contraseña incorrecta.", true);
+    reportError("Contraseña incorrecta.");
     return;
   }
 
@@ -174,6 +198,7 @@ async function handleLogin(event) {
 async function handleSignup() {
   if (!supabase) {
     setMessage("Supabase no está configurado.", true);
+    reportError("Supabase no está listo.");
     return;
   }
 
@@ -191,6 +216,7 @@ async function handleSignup() {
 
   if (existing) {
     setMessage("Ese email ya existe.", true);
+    reportError("Email ya existe.");
     return;
   }
 
@@ -203,6 +229,7 @@ async function handleSignup() {
 
   if (error) {
     setMessage(error.message, true);
+    reportError(error.message);
     return;
   }
 
@@ -241,5 +268,14 @@ async function init() {
   const storedEmail = localStorage.getItem(STORAGE_KEY);
   updateAuthUI(storedEmail);
 }
+
+window.addEventListener("error", (event) => {
+  reportError(event.message || "Error desconocido.");
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+  const message = event.reason?.message || "Promesa rechazada.";
+  reportError(message);
+});
 
 init();

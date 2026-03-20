@@ -417,6 +417,40 @@ body {
   }
 }
 
+.status-left,
+.status-right {
+  position: fixed;
+  bottom: 12px;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(10, 8, 20, 0.7);
+  border: 1px solid rgba(138, 90, 243, 0.3);
+  color: var(--muted);
+  backdrop-filter: blur(6px);
+  z-index: 60;
+}
+
+.status-left {
+  left: 16px;
+  max-width: 60vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-left.has-error {
+  color: #ff8fa3;
+  border-color: rgba(255, 143, 163, 0.5);
+}
+
+.status-right {
+  right: 16px;
+  color: var(--accent-soft);
+}
+
 @media (max-width: 720px) {
   .hero {
     padding: 36px 6vw 20px;
