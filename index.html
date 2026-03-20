@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sombra de la Coalición - Rangos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Rajdhani:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient">
+      <div class="glow"></div>
+      <div class="mist mist--one"></div>
+      <div class="mist mist--two"></div>
+    </div>
+
+    <header class="hero">
+      <div class="brand">
+        <img class="logo" src="logo.png" alt="Logo Sombra de la Coalición" />
+        <div class="brand-text">
+          <p class="eyebrow">Servidor geopolítico de Minecraft</p>
+          <h1>Sombra de la Coalición</h1>
+          <p class="subtitle">
+            Tienda oficial de rangos. La gloria se gana con estrategia.
+          </p>
+        </div>
+      </div>
+      <div class="auth">
+        <div class="auth-status" id="authStatus">No conectado</div>
+        <button class="btn btn-primary" id="loginBtn">Iniciar sesión</button>
+        <button class="btn btn-ghost" id="logoutBtn" disabled>Salir</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="ranks">
+        <div class="rank-card">
+          <div class="rank-header">
+            <span class="rank-title">Rango vacío</span>
+            <span class="rank-tag">Próximamente</span>
+          </div>
+          <div class="rank-body">
+            <div class="rank-placeholder"></div>
+            <p class="rank-note">Detalles del rango aún por definir.</p>
+          </div>
+          <button class="btn btn-secondary" disabled>Disponible pronto</button>
+        </div>
+
+        <div class="rank-card">
+          <div class="rank-header">
+            <span class="rank-title">Rango vacío</span>
+            <span class="rank-tag">Próximamente</span>
+          </div>
+          <div class="rank-body">
+            <div class="rank-placeholder"></div>
+            <p class="rank-note">Detalles del rango aún por definir.</p>
+          </div>
+          <button class="btn btn-secondary" disabled>Disponible pronto</button>
+        </div>
+
+        <div class="rank-card">
+          <div class="rank-header">
+            <span class="rank-title">Rango vacío</span>
+            <span class="rank-tag">Próximamente</span>
+          </div>
+          <div class="rank-body">
+            <div class="rank-placeholder"></div>
+            <p class="rank-note">Detalles del rango aún por definir.</p>
+          </div>
+          <button class="btn btn-secondary" disabled>Disponible pronto</button>
+        </div>
+
+        <div class="rank-card">
+          <div class="rank-header">
+            <span class="rank-title">Rango vacío</span>
+            <span class="rank-tag">Próximamente</span>
+          </div>
+          <div class="rank-body">
+            <div class="rank-placeholder"></div>
+            <p class="rank-note">Detalles del rango aún por definir.</p>
+          </div>
+          <button class="btn btn-secondary" disabled>Disponible pronto</button>
+        </div>
+      </section>
+    </main>
+
+    <dialog class="login-modal" id="loginModal">
+      <div class="modal-header">
+        <h2>Acceso a la Coalición</h2>
+        <button class="icon-btn" id="closeModal" aria-label="Cerrar">✕</button>
+      </div>
+      <p class="modal-note">Conecta tu cuenta para comprar rangos.</p>
+      <form class="modal-form" id="loginForm">
+        <label class="field">
+          <span>Email</span>
+          <input type="email" name="email" placeholder="comandante@coalicion.com" required />
+        </label>
+        <label class="field">
+          <span>Contraseña</span>
+          <input type="password" name="password" placeholder="••••••••" required />
+        </label>
+        <div class="modal-actions">
+          <button class="btn btn-primary" type="submit">Iniciar sesión</button>
+          <button class="btn btn-ghost" type="button" id="signupBtn">Crear cuenta</button>
+        </div>
+        <p class="modal-footnote" id="authMessage">Acceso propio usando tabla en Supabase.</p>
+      </form>
+    </dialog>
+
+    <script src="supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
