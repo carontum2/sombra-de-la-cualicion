@@ -257,7 +257,7 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
-  z-index: 50;
+  z-index: 999;
 }
 
 .login-overlay.is-open {
@@ -279,6 +279,7 @@ body {
   transform: translateY(16px) scale(0.92);
   opacity: 0;
   transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: 1000;
 }
 
 .login-modal.is-open {

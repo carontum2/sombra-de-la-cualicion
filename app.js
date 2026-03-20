@@ -47,6 +47,8 @@ function openModal() {
     return;
   }
   clearError();
+  loginOverlay.style.opacity = "1";
+  loginOverlay.style.pointerEvents = "auto";
   loginOverlay.classList.add("is-open");
   loginModal.classList.remove("closing");
   loginModal.classList.add("is-open");
@@ -59,9 +61,11 @@ function closeModalSafe() {
   loginModal.classList.add("closing");
   const finishClose = () => {
     loginModal.classList.remove("closing");
+    loginOverlay.style.opacity = "";
+    loginOverlay.style.pointerEvents = "";
     loginOverlay.classList.remove("is-open");
     loginOverlay.setAttribute("aria-hidden", "true");
-    loginModal.removeEventListener("animationend", finishClose);
+    loginModal.removeEventListener("transitionend", finishClose);
   };
   loginModal.addEventListener("transitionend", finishClose);
 }
