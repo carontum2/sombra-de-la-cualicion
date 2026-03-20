@@ -53,6 +53,18 @@ function updateAuthUI(email) {
   }
 }
 
+function hideLoginPanel() {
+  if (!loginPanel || !loginModal) return;
+  loginModal.classList.add("closing");
+  loginPanel.classList.add("hidden");
+  const cleanup = () => {
+    loginModal.classList.remove("closing");
+    loginModal.removeEventListener("transitionend", cleanup);
+  };
+  loginModal.addEventListener("transitionend", cleanup);
+  setTimeout(cleanup, 400);
+}
+
 function openModal() {
   if (!loginPanel || !loginModal) {
     reportError("No se pudo abrir el login fijo.");
@@ -65,14 +77,7 @@ function openModal() {
 
 function closeModalSafe() {
   if (!loginPanel || loginPanel.classList.contains("hidden")) return;
-  loginModal.classList.remove("is-open");
-  loginModal.classList.add("closing");
-  const finishClose = () => {
-    loginModal.classList.remove("closing");
-    loginPanel.classList.add("hidden");
-    loginModal.removeEventListener("transitionend", finishClose);
-  };
-  loginModal.addEventListener("transitionend", finishClose);
+  hideLoginPanel();
 }
 
 function initSupabase() {
@@ -185,12 +190,12 @@ async function handleLogin(event) {
       return;
     }
 
-    localStorage.setItem(STORAGE_KEY, email);
-    updateAuthUI(email);
-    setMessage("Cuenta creada y sesión iniciada.");
-    closeModalSafe();
-    return;
-  }
+  localStorage.setItem(STORAGE_KEY, email);
+  updateAuthUI(email);
+  setMessage("Cuenta creada y sesión iniciada.");
+  hideLoginPanel();
+  return;
+}
 
   if (data.password_hash !== passwordHash) {
     setMessage("Contraseña incorrecta.", true);
@@ -201,7 +206,7 @@ async function handleLogin(event) {
   localStorage.setItem(STORAGE_KEY, email);
   updateAuthUI(email);
   setMessage("Listo. Bienvenido a la Coalición.");
-  closeModalSafe();
+  hideLoginPanel();
 }
 
 async function handleSignup() {
