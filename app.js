@@ -225,6 +225,12 @@ async function handleSignup() {
   const email = formData.get("email");
   const password = formData.get("password");
 
+  if (!email || !password) {
+    setMessage("Rellena email y contraseña.", true);
+    reportError("Faltan datos para registrar.");
+    return;
+  }
+
   setMessage("Creando cuenta...");
   const passwordHash = await hashPassword(password);
   const { data: existing } = await supabase
@@ -252,7 +258,10 @@ async function handleSignup() {
     return;
   }
 
-  setMessage("Cuenta creada. Ya puedes iniciar sesión.");
+  localStorage.setItem(STORAGE_KEY, email);
+  updateAuthUI(email);
+  setMessage("Cuenta creada y sesión iniciada.");
+  hideLoginPanel();
 }
 
 async function handleLogout() {
@@ -264,6 +273,10 @@ async function handleLogout() {
 function bindEvents() {
   if (!loginBtn || !loginPanel || !loginModal) {
     reportError("Faltan elementos del login en el HTML.");
+    return;
+  }
+  if (!signupBtn || !loginForm) {
+    reportError("Faltan elementos del registro en el HTML.");
     return;
   }
   loginBtn.addEventListener("click", openModal);
