@@ -256,13 +256,14 @@ body {
   backdrop-filter: blur(6px);
   opacity: 1;
   pointer-events: auto;
-  transition: opacity 0.35s ease;
+  transition: opacity 0.45s ease;
   z-index: 999;
 }
 
 .login-panel.hidden {
   opacity: 0;
   pointer-events: none;
+  transition: opacity 0.45s ease;
 }
 
 .login-modal {
@@ -278,7 +279,7 @@ body {
   border: 1px solid rgba(180, 140, 255, 0.35);
   transform: translateY(0) scale(1);
   opacity: 1;
-  transition: transform 0.35s ease, opacity 0.35s ease;
+  transition: transform 0.45s ease, opacity 0.45s ease;
   z-index: 1000;
 }
 

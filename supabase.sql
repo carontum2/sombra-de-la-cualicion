@@ -15,7 +15,15 @@ begin
 end;
 $$ language plpgsql;
 
-drop trigger if exists users_set_updated_at on public.users;
-create trigger users_set_updated_at
-before update on public.users
-for each row execute function public.set_updated_at();
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_trigger
+    where tgname = 'users_set_updated_at'
+  ) then
+    create trigger users_set_updated_at
+    before update on public.users
+    for each row execute function public.set_updated_at();
+  end if;
+end $$;
