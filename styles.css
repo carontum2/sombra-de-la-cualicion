@@ -147,6 +147,7 @@ body {
   border-radius: 20px;
   border: 1px solid rgba(180, 140, 255, 0.2);
   box-shadow: var(--shadow);
+  position: relative;
   transform: translateY(10px);
   opacity: 0;
   animation: cardRise 0.9s ease forwards;
@@ -170,6 +171,36 @@ body {
   box-shadow: 0 30px 60px rgba(18, 10, 34, 0.65);
 }
 
+.rank-card.tier-vip {
+  border-color: rgba(91, 195, 165, 0.45);
+  box-shadow: 0 20px 40px rgba(20, 40, 36, 0.45);
+}
+
+.rank-card.tier-vipplus {
+  border-color: rgba(138, 90, 243, 0.55);
+  box-shadow: 0 24px 46px rgba(44, 28, 76, 0.55);
+}
+
+.rank-card.tier-conquistador {
+  border-color: rgba(247, 163, 52, 0.55);
+  box-shadow: 0 26px 54px rgba(87, 48, 12, 0.6);
+}
+
+.rank-card.tier-conquistadorplus {
+  border-color: rgba(255, 215, 130, 0.7);
+  box-shadow: 0 28px 60px rgba(120, 86, 28, 0.7);
+  background: linear-gradient(160deg, rgba(30, 22, 40, 0.95), rgba(18, 12, 28, 0.98));
+}
+
+.rank-card.tier-conquistadorplus::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(circle, rgba(255, 215, 130, 0.18), transparent 60%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 .rank-header {
   display: flex;
   justify-content: space-between;
@@ -191,6 +222,21 @@ body {
 .rank-body {
   display: grid;
   gap: 12px;
+}
+
+.rank-benefits {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(10, 8, 20, 0.75);
+  border: 1px solid rgba(138, 90, 243, 0.25);
+  color: var(--silver);
+  font-size: 0.95rem;
+}
+
+.rank-benefits p {
+  margin: 0;
 }
 
 .rank-placeholder {
